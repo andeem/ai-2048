@@ -4,6 +4,7 @@
 * Github repository initialized
 * Project definition finalized
 * Made some decisions regarding the structural design
+* Started writing the game implementation
 
 ## Learning experience
 * Understanding the Monte Carlo tree search and UCB1/UCT
