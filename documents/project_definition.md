@@ -1,7 +1,7 @@
 # Project definition
 AI2048 will be a project including artificial intelligence for the game 2048 based on Monte Carlo tree search(MCTS) and a GUI for demonstrating the AI. There will be also some benchmarking between the different approaches of MCTS, and possibility to inspect the effects of certain parameters used in MCTS.
 
-2048 is a game where numbers 2 and 4 are randomly added to a 4*4 board and player moves all blocks in one direction(up, down, left or right) at the time, combining two adjacent blocks to a new block, if the adjacent blocks have the same value. The new block will then have a value of the sums of blocks that were combined.
+2048 is a game where numbers 2 and 4 are randomly added to a 4*4 board and player moves all blocks in one direction(up, down, left or right) at the time, combining two adjacent blocks to a new block, if the adjacent blocks have the same value. The new block will then have a value of the sums of blocks that were combined. The goal is to reach 2048 in highest block, however the game can continue far beyound that.
 
 Monte Carlo tree search has been proven to be a powerful algorithm for different game AIs, probably most notable game being Go. 
 ## Algortithms and data structures
