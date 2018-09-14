@@ -1,5 +1,6 @@
 package Game2048;
 
+import static org.mockito.Mockito.*;
 import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,6 +12,7 @@ import static org.junit.Assert.*;
 public class BoardTest {
 
     public Board board;
+    public Random rand;
 
     public BoardTest() {
     }
@@ -25,7 +27,9 @@ public class BoardTest {
 
     @Before
     public void setUp() {
-        board = new Board(new StubRandom(0, 1, 2));
+        rand = mock(Random.class);
+        when(rand.nextInt(anyInt())).thenReturn(0, 1, 2);
+        board = new Board(rand);
     }
 
     @After
@@ -62,7 +66,9 @@ public class BoardTest {
 
     @Test
     public void testMoveMovesNumbersOverEmptySpace() {
-        board = new Board(new StubRandom(3, 6, 9));
+        reset(rand);
+        when(rand.nextInt(anyInt())).thenReturn(3, 6, 9);
+        board = new Board(rand);
         assertTrue("First index empty", board.getBoard()[0][0] == 0);
         board.move(Directions.LEFT);
         assertTrue("First index not empty", board.getBoard()[0][0] == 2);
@@ -70,7 +76,9 @@ public class BoardTest {
 
     @Test
     public void testMoveMovesNumbersOverEmptySpaceAndAddsThem() {
-        board = new Board(new StubRandom(0, 2, 12));
+        reset(rand);
+        when(rand.nextInt(anyInt())).thenReturn(0, 2, 12);
+        board = new Board(rand);
         assertTrue("First index has value 2", board.getBoard()[0][0] == 2);
         board.move(Directions.LEFT);
         assertTrue("First index has value 4", board.getBoard()[0][0] == 4);
@@ -78,7 +86,9 @@ public class BoardTest {
 
     @Test
     public void testMoveRotatesTheBoard() {
-        board = new Board(new StubRandom(3, 7, 11));
+        reset(rand);
+        when(rand.nextInt(anyInt())).thenReturn(3, 7, 11);
+        board = new Board(rand);
         assertTrue("Index[3,0] not empty", board.getBoard()[0][3] == 2);
         board.move(Directions.UP);
         assertTrue("Index[0,0] not empty", board.getBoard()[0][0] == 2);
@@ -86,7 +96,45 @@ public class BoardTest {
 
     @Test
     public void testNewBlockIsAddedAfterMove() {
-        board = new Board(new StubRandom(4, 4, 4, 0));
+        reset(rand);
+        when(rand.nextInt(anyInt())).thenReturn(4, 4, 4, 0);
+        board = new Board(rand);
+        board.addBlock();
+        assertEquals(2, board.getBoard()[0][0]);
+    }
+    
+    @Test
+    public void testPlayerCanMoveWhenThereIsFreeSlots() {
+        assertTrue(board.playerCanMove());
+    }
+    
+    @Test
+    public void testPlayerCanMoveWhenBoardIsFullButCombineIsPossible() {
+        int[][] b = {
+            {2,4,2,4},
+            {4,2,4,2},
+            {8,2,8,4},
+            {4,8,4,2}};
+        board = new Board(rand, b);
+        assertTrue(board.playerCanMove());
+    }
+    
+    @Test
+    public void testPlayerCantMoveWhenBoardIsFullAndNoMoveIsPossible() {
+        int[][] b = {
+            {2,4,2,4},
+            {4,2,4,2},
+            {2,4,2,4},
+            {4,2,4,2}};
+        board = new Board(rand, b);
+        assertFalse(board.playerCanMove());
+    }
+
+    private void playToFullBoard() {
+        reset(rand);
+        when(rand.nextInt(anyInt())).thenReturn(0, 0, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        when(rand.nextDouble()).thenReturn(0d, 1d, 0d, 1d, 1d, 0d, 1d, 0d, 0d, 1d, 0d, 1d, 1d, 0d, 1d, 0d);
+        board = new Board(rand);
         board.addBlock();
         assertEquals(2, board.getBoard()[0][0]);
     }
