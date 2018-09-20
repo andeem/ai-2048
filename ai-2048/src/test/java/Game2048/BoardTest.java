@@ -102,41 +102,59 @@ public class BoardTest {
         board.addBlock();
         assertEquals(2, board.getBoard()[0][0]);
     }
-    
+
     @Test
     public void testPlayerCanMoveWhenThereIsFreeSlots() {
         assertTrue(board.playerCanMove());
     }
-    
+
     @Test
     public void testPlayerCanMoveWhenBoardIsFullButCombineIsPossible() {
         int[][] b = {
-            {2,4,2,4},
-            {4,2,4,2},
-            {8,2,8,4},
-            {4,8,4,2}};
+            {2, 4, 2, 4},
+            {4, 2, 4, 2},
+            {8, 2, 8, 4},
+            {4, 8, 4, 2}};
         board = new Board(rand, b);
         assertTrue(board.playerCanMove());
     }
-    
+
     @Test
     public void testPlayerCantMoveWhenBoardIsFullAndNoMoveIsPossible() {
         int[][] b = {
-            {2,4,2,4},
-            {4,2,4,2},
-            {2,4,2,4},
-            {4,2,4,2}};
+            {2, 4, 2, 4},
+            {4, 2, 4, 2},
+            {2, 4, 2, 4},
+            {4, 2, 4, 2}};
         board = new Board(rand, b);
         assertFalse(board.playerCanMove());
     }
 
-    private void playToFullBoard() {
-        reset(rand);
-        when(rand.nextInt(anyInt())).thenReturn(0, 0, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        when(rand.nextDouble()).thenReturn(0d, 1d, 0d, 1d, 1d, 0d, 1d, 0d, 0d, 1d, 0d, 1d, 1d, 0d, 1d, 0d);
-        board = new Board(rand);
+    @Test
+    public void testTurnChangesAfterPlayer() {
+        board.move(Directions.UP);
+        assertEquals(-1, board.getTurn());
+    }
+
+    @Test
+    public void testTurnChangesAfterComputer() {
+        board.move(Directions.UP);
         board.addBlock();
-        assertEquals(2, board.getBoard()[0][0]);
+        assertEquals(-1, board.getTurn());
+    }
+
+    @Test
+    public void testEquals() {
+        when(rand.nextInt(anyInt())).thenReturn(0, 1, 2);
+        Board b = new Board(rand);
+        assertTrue(this.board.equals(b));
+    }
+    
+    @Test
+    public void testNotEquals() {
+        when(rand.nextInt(anyInt())).thenReturn(0, 7, 2);
+        Board b = new Board(rand);
+        assertFalse(this.board.equals(b));
     }
 
 }

@@ -1,6 +1,7 @@
 package Game2048;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -16,6 +17,7 @@ public class Board {
     private ArrayList<String> freeCoords;
     private boolean canBeAdded;
     private boolean playerCanMove;
+    private int turn;
 
     /**
      * Class constructor
@@ -35,6 +37,7 @@ public class Board {
         playerCanMove = true;
         freeCoords = new ArrayList<>();
         updateEmptySlots();
+        this.turn = 1;
 
         for (int i = 0; i < 3; i++) {
             addBlock();
@@ -67,6 +70,8 @@ public class Board {
         } else {
             board[y][x] = 4;
         }
+        
+        this.turn = -1;
 
     }
     /**
@@ -84,6 +89,7 @@ public class Board {
         
         rotate(Directions.LEFT);
         updateEmptySlots();
+        this.turn = -1;
     }
 
     private void combine() {
@@ -167,5 +173,42 @@ public class Board {
     public int[][] getBoard() {
         return board;
     }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Board other = (Board) obj;
+        if (this.turn != other.turn) {
+            return false;
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (this.board[i][j] != other.board[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    
     
 }
