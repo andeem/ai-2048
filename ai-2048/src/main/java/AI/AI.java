@@ -2,6 +2,7 @@ package AI;
 
 import Game2048.Board;
 import Game2048.Game;
+import Game2048.Game2048;
 import java.util.Random;
 import java.util.Stack;
 
@@ -37,11 +38,10 @@ public class AI {
     }
     
     private boolean simulate() {
-        Game simulation = current.getLatest();
+        Game simulation = new Game2048(rand, new Board(rand, current.getLatest().getBoard().getBoard(), current.getLatest().getBoard().getTurn()));
         while(simulation.isRunning()) {
             simulation.playRandom();
         }
-        System.out.println(simulation.getBoard());
         return simulation.hasWon();
     }
 
@@ -56,4 +56,10 @@ public class AI {
             }
         }
     }
+
+    public Game<Board> getGame() {
+        return game;
+    }
+
+    
 }

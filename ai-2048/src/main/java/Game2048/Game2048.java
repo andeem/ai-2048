@@ -74,7 +74,11 @@ public class Game2048 implements Game {
 
     @Override
     public boolean canMove() {
-        return board.playerCanMove();
+        if (legalMoves == null) {
+            return true;
+        } 
+        return !legalMoves.isEmpty();
+ 
     }
 
     @Override

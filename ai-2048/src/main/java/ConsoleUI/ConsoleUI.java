@@ -21,7 +21,9 @@ public class ConsoleUI {
         Board b = new Board(new Random());
         Game2048 game = new Game2048(new Random(), b);
         AI ai = new AI(game);
-        ai.playOut();
+        while(ai.getGame().getBoard().getHighest() < 124) {
+            ai.playOut();
+        }
     }
 
     private static void move(Board b, Directions d) {
