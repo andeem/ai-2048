@@ -2,6 +2,7 @@ package Game2048;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -18,6 +19,7 @@ public class Board {
     private boolean canBeAdded;
     private boolean playerCanMove;
     private int turn;
+    private int highest;
 
     /**
      * Class constructor
@@ -27,8 +29,12 @@ public class Board {
     public Board(Random random) {
         this(random, new int[4][4]);
     }
-    
-    public Board(Random random, int[][] board){
+
+    public Board(Random random, int[][] board) {
+        this(random, board, -1);
+    }
+
+    public Board(Random random, int[][] board, int turn) {
         orientation = Directions.LEFT;
         this.board = board;
         int count = 0;
@@ -37,7 +43,8 @@ public class Board {
         playerCanMove = true;
         freeCoords = new ArrayList<>();
         updateEmptySlots();
-        this.turn = 1;
+        this.turn = turn;
+        this.highest = 0;
 
         for (int i = 0; i < 3; i++) {
             addBlock();
@@ -52,6 +59,7 @@ public class Board {
     public Board(int size) {
         throw new UnsupportedOperationException();
     }
+
     /**
      * Adds a block on a empty space
      */
@@ -60,7 +68,6 @@ public class Board {
             canBeAdded = false;
             return;
         }
-        rotate(Directions.LEFT);
         int newCoord = random.nextInt(freeCoords.size());
         String coord = freeCoords.remove(newCoord);
         int x = Integer.parseInt(coord.substring(0, 1));
@@ -70,53 +77,67 @@ public class Board {
         } else {
             board[y][x] = 4;
         }
-        
+
         this.turn = -1;
 
     }
+
     /**
      * Moves blocks to selected direction
-     * @param direction 
+     *
+     * @param direction
      */
-    public void move(Directions direction) {
+    public boolean move(Directions direction) {
         if (!playerCanMove()) {
-            return;
+            return false;
         }
-        
+
         rotate(direction);
 
-        combine();
-        
+        boolean didMove = combine();
+
         rotate(Directions.LEFT);
         updateEmptySlots();
-        this.turn = -1;
+        this.turn = 1;
+        return didMove;
     }
 
-    private void combine() {
+    private boolean combine() {
+        boolean moved = false;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 int k = j;
+                int limit = 0;
                 while (true) {
-                    if (k == 0) {
+                    if (k == limit) {
                         break;
                     } else if (board[i][k] != 0 && board[i][k] == board[i][k - 1]) {
                         board[i][k - 1] = board[i][k - 1] * 2;
+                        if (board[i][k - 1] > highest) {
+                            highest = board[i][k - 1];
+                        }
                         board[i][k] = 0;
                         k--;
+                        moved = true;
+                        limit = k;
                     } else if (board[i][k - 1] == 0 && board[i][k] != 0) {
                         board[i][k - 1] = board[i][k];
                         board[i][k] = 0;
                         k--;
+                        moved = true;
                     } else {
                         break;
                     }
                 }
             }
         }
+        return moved;
     }
+
     /**
      * Returns true if theres legal moves
-     * @return 
+     *
+     * @return
      */
     public boolean playerCanMove() {
         if (!freeCoords.isEmpty()) {
@@ -147,17 +168,22 @@ public class Board {
             return;
         }
         int[][] b = new int[4][4];
+        int[][] b1 = board;
         while (orientation != direction) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board[i].length; j++) {
-                    b[j][i] = board[i][j];
+                    b[j][i] = b1[i][3 - j];
                 }
             }
+            b1 = b;
+
+            board = b1;
+            b = new int[4][4];
             orientation = orientation.next();
         }
-        board = b;
+        board = b1;
     }
-    
+
     private void updateEmptySlots() {
         freeCoords.clear();
         for (int i = 0; i < board.length; i++) {
@@ -170,6 +196,34 @@ public class Board {
         canBeAdded = !freeCoords.isEmpty();
     }
 
+    ArrayList<Board> getLegalMoves() {
+        ArrayList<Board> list = new ArrayList();
+        if (this.turn == -1) {
+            for (int i = 0; i < 4; i++) {
+                int[][] b = this.board.clone();
+                if (combine()) {
+                    list.add(new Board(random, board, 1));
+                    this.board = b;
+                }
+                rotate(orientation.next());
+            }
+        } else {
+            for (String coord : freeCoords) {
+                int x = Integer.parseInt(coord.substring(0, 1));
+                int y = Integer.parseInt(coord.substring(1, 2));
+                int[][] b = this.board.clone();
+                board[y][x] = 2;
+                list.add(new Board(random, board, -1));
+                board = b;
+                b = this.board.clone();
+                board[y][x] = 4;
+                list.add(new Board(random, board, -1));
+                board = b;
+            }
+        }
+        return list;
+    }
+
     public int[][] getBoard() {
         return board;
     }
@@ -178,9 +232,22 @@ public class Board {
         return turn;
     }
 
+    public int getEmptyCount() {
+        return freeCoords.size();
+    }
+
+    public int getHighest() {
+        return this.highest;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 7;
+        int prime = 3;
+        for (int i = 0; i < board.length; i++) {
+            hash = 3 * hash + Arrays.hashCode(board[i]);
+        }
+        hash += turn;
         return hash;
     }
 
@@ -209,6 +276,16 @@ public class Board {
         return true;
     }
 
-    
-    
+    @Override
+    public String toString() {
+        String ts = "";
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                ts += String.format("%1$6d", board[i][j]);
+            }
+            ts += "\n";
+        }
+        return ts;
+    }
+
 }

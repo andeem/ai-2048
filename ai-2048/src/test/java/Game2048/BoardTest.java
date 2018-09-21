@@ -133,7 +133,7 @@ public class BoardTest {
     @Test
     public void testTurnChangesAfterPlayer() {
         board.move(Directions.UP);
-        assertEquals(-1, board.getTurn());
+        assertEquals(1, board.getTurn());
     }
 
     @Test

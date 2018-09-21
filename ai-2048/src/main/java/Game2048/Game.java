@@ -8,8 +8,16 @@ public interface Game<T> {
  
     void playRandom();
     boolean ownTurn();
-    boolean getRunning();
+    boolean isRunning();
     int getWins();
     int getTotalGames();
-    T[] getBoards();
+    boolean canMove();
+    Game[] getMoves();
+    Game[] getLegalMoves();
+    void add(Game toAdd);
+    Game getLatest();
+    boolean hasWon();
+    void addWin();
+    void addLoss();
+    Board getBoard();
 }
