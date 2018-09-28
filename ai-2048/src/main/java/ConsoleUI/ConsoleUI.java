@@ -17,11 +17,14 @@ import java.util.Scanner;
  * @author emil
  */
 public class ConsoleUI {
+
     public static void main(String[] args) {
         Board b = new Board(new Random());
         Game2048 game = new Game2048(new Random(), b);
         AI ai = new AI(game);
-        while(ai.getGame().getBoard().getHighest() < 124) {
+        System.out.println(b);
+        for (int i = 0; i < 100; i++) {
+
             ai.playOut();
         }
     }

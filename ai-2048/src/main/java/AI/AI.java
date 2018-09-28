@@ -38,10 +38,11 @@ public class AI {
     }
     
     private boolean simulate() {
-        Game simulation = new Game2048(rand, new Board(rand, current.getLatest().getBoard().getBoard(), current.getLatest().getBoard().getTurn()));
+        Game simulation = new Game2048(rand, new Board(rand, current.getLatest().getBoard().getBoard(), current.getLatest().getBoard().getTurn(), false));
         while(simulation.isRunning()) {
             simulation.playRandom();
         }
+        System.out.println(simulation.getBoard().getHighest());
         return simulation.hasWon();
     }
 

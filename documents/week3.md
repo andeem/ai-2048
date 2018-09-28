@@ -1,4 +1,4 @@
-# Weekly report, week 2
+# Weekly report, week 3
 ## Progression
 * Continued writing the game implementation, started writing the AI implementation
 ## Learning experience

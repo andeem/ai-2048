@@ -20,6 +20,7 @@ public class Board {
     private boolean playerCanMove;
     private int turn;
     private int highest;
+    private Directions highestDir;
 
     /**
      * Class constructor
@@ -35,6 +36,10 @@ public class Board {
     }
 
     public Board(Random random, int[][] board, int turn) {
+        this(random, board, turn, true);
+    }
+
+    public Board(Random random, int[][] board, int turn, boolean newBoard) {
         orientation = Directions.LEFT;
         this.board = board;
         int count = 0;
@@ -43,12 +48,16 @@ public class Board {
         playerCanMove = true;
         freeCoords = new ArrayList<>();
         updateEmptySlots();
-        this.turn = turn;
         this.highest = 0;
 
-        for (int i = 0; i < 3; i++) {
-            addBlock();
+        if (newBoard) {
+
+            for (int i = 0; i < 3; i++) {
+                addBlock();
+            }
         }
+        this.turn = turn;
+        this.highestDir = Directions.LEFT;
     }
 
     /**
@@ -115,6 +124,11 @@ public class Board {
                         board[i][k - 1] = board[i][k - 1] * 2;
                         if (board[i][k - 1] > highest) {
                             highest = board[i][k - 1];
+                            if (k - 1 < 2) {
+                                highestDir = this.orientation;
+                            } else {
+                                highestDir = this.orientation.next().next();
+                            }
                         }
                         board[i][k] = 0;
                         k--;
@@ -132,6 +146,10 @@ public class Board {
             }
         }
         return moved;
+    }
+
+    public Directions getHighestDir() {
+        return highestDir;
     }
 
     /**
@@ -200,9 +218,12 @@ public class Board {
         ArrayList<Board> list = new ArrayList();
         if (this.turn == -1) {
             for (int i = 0; i < 4; i++) {
-                int[][] b = this.board.clone();
+                int[][] b = boardCopy();
                 if (combine()) {
-                    list.add(new Board(random, board, 1));
+                    Directions dir = this.orientation;
+                    rotate(Directions.LEFT);
+                    list.add(new Board(random, board, 1, false));
+                    rotate(dir);
                     this.board = b;
                 }
                 rotate(orientation.next());
@@ -213,14 +234,15 @@ public class Board {
                 int y = Integer.parseInt(coord.substring(1, 2));
                 int[][] b = this.board.clone();
                 board[y][x] = 2;
-                list.add(new Board(random, board, -1));
+                list.add(new Board(random, board, -1, false));
                 board = b;
                 b = this.board.clone();
                 board[y][x] = 4;
-                list.add(new Board(random, board, -1));
+                list.add(new Board(random, board, -1, false));
                 board = b;
             }
         }
+        rotate(Directions.LEFT);
         return list;
     }
 
@@ -239,7 +261,7 @@ public class Board {
     public int getHighest() {
         return this.highest;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -286,6 +308,16 @@ public class Board {
             ts += "\n";
         }
         return ts;
+    }
+
+    private int[][] boardCopy() {
+        int[][] copy = new int[this.board.length][this.board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                copy[i][j] = board[i][j];
+            }
+        }
+        return copy;
     }
 
 }

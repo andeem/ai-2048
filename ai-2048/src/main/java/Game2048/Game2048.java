@@ -29,6 +29,12 @@ public class Game2048 implements Game {
             board.addBlock();
         } else {
             if (board.playerCanMove()) {
+                if (board.move(board.getHighestDir())) {
+                    return;
+                }
+                if (board.move(board.getHighestDir().next())) {
+                    return;
+                }
                 Directions dir = getDirection(random.nextInt(4));
                 while(!board.move(dir)) {
                     dir = getDirection(random.nextInt(4));
