@@ -12,36 +12,127 @@ public class Game2048 implements Game {
     private ArrayList<Game> legalMoves;
     private int wins;
     private int losses;
+    private Directions directionToCounter;
+    private String prevHighestPos;
+    private int highest;
 
-    public Game2048(Random random, Board board) {
+    public Game2048(Random random, Board board, int highest) {
         this.random = random;
         this.board = board;
         this.moves = new ArrayList();
         //this.legalMoves = legalMovesFromBoard();
         this.wins = 0;
         this.losses = 0;
+        this.directionToCounter = null;
+        this.prevHighestPos = "00";
+        this.highest = highest;
     }
 
+    
+    
     @Override
     public void playRandom() {
+        playRandom(1);
+    }
+    
+    
+    public void playRandom(int selection) {
         //Board simulation = new Board(random, board.getBoard(), board.getTurn());
         if (board.getTurn() == 1) {
             board.addBlock();
         } else {
-            if (board.playerCanMove()) {
-                if (board.move(board.getHighestDir())) {
-                    return;
-                }
-                if (board.move(board.getHighestDir().next())) {
-                    return;
-                }
-                Directions dir = getDirection(random.nextInt(4));
-                while(!board.move(dir)) {
-                    dir = getDirection(random.nextInt(4));
-                }
+            switch(selection){
+                case 1:
+                    randomPlay1();
+                    break;
+                case 2:
+                    randomPlay2();
+                    break;
+                case 3:
+                    randomPlay3();
+                    break;
+                case 4:
+                    randomPlay4();
+                    break;
             }
         }
 
+    }
+
+    private void randomPlay4() {
+        if (board.playerCanMove()) {
+            
+            if (board.move(Directions.LEFT)) {
+                return;
+            }
+            if (board.move(Directions.DOWN)) {
+                return;
+            }
+            if (board.move(Directions.RIGHT)) {
+                return;
+            }
+            if (board.move(Directions.UP)) {
+                return;
+            }
+        }
+    }
+    
+    private void randomPlay3() {
+        if (board.playerCanMove()) {                        
+            Directions dir = getDirection(random.nextInt(4));
+            while (!board.move(dir)) {
+                dir = getDirection(random.nextInt(4));
+            }
+        }
+    }
+    
+    private void randomPlay2() {
+        if (board.playerCanMove()) {
+            
+            if (board.move(Directions.LEFT)) {
+                return;
+            }
+            if (board.move(Directions.DOWN)) {
+                return;
+            }
+                        
+            Directions dir = getDirection(random.nextInt(4));
+            while (!board.move(dir)) {
+                dir = getDirection(random.nextInt(4));
+            }
+        }
+    }
+    
+    
+    private void randomPlay1() {
+        if (board.playerCanMove()) {
+            if (directionToCounter != null && !prevHighestPos.equals(board.getHighestPos())) {
+                if (board.move(directionToCounter)) {
+                    return;
+                }
+            }
+            directionToCounter = null;
+            prevHighestPos = board.getHighestPos();
+            if (board.move(Directions.LEFT)) {
+                return;
+            }
+            if (board.move(Directions.DOWN)) {
+                return;
+            }
+            if (board.move(Directions.UP)) {
+                directionToCounter = Directions.DOWN;
+                return;
+            }
+            if (board.move(Directions.RIGHT)) {
+                return;
+            }
+            
+            Directions dir = getDirection(random.nextInt(4));
+            directionToCounter = dir.next().next();
+            while (!board.move(dir)) {
+                dir = getDirection(random.nextInt(4));
+            }
+        }
     }
 
     private Directions getDirection(int i) {
@@ -57,7 +148,7 @@ public class Game2048 implements Game {
         }
         return null;
     }
-    
+
     @Override
     public boolean ownTurn() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -70,21 +161,21 @@ public class Game2048 implements Game {
 
     @Override
     public int getWins() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return wins;
     }
 
     @Override
     public int getTotalGames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return wins + losses;
     }
 
     @Override
     public boolean canMove() {
         if (legalMoves == null) {
             return true;
-        } 
+        }
         return !legalMoves.isEmpty();
- 
+
     }
 
     @Override
@@ -113,7 +204,12 @@ public class Game2048 implements Game {
 
     @Override
     public boolean hasWon() {
-        return board.getTurn() == -1;
+//        if (highest < 512) {
+//            return board.getHighest() >= 512;
+//        } else {
+            return board.getHighest() > highest;
+//        }
+        
     }
 
     @Override
@@ -130,7 +226,7 @@ public class Game2048 implements Game {
         ArrayList<Game> moves = new ArrayList();
         List<Board> boards = board.getLegalMoves();
         for (Board b : boards) {
-            moves.add(new Game2048(random,b));
+            moves.add(new Game2048(random, b, this.highest));
         }
         return moves;
     }

@@ -30,7 +30,7 @@ public class Game2048Test {
     public void setUp() {
         rand = mock(Random.class);
         board = mock(Board.class);
-        game = new Game2048(rand, board);
+        game = new Game2048(rand, board,0);
     }
 
     @After

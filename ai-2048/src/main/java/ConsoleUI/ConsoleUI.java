@@ -19,19 +19,44 @@ import java.util.Scanner;
 public class ConsoleUI {
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter command: 1) Run MCTS simulation tests with different simulations, 9) Quit");
+        while (true) {
+            int command = Integer.parseInt(scanner.nextLine());
+            if (command == 9) {
+                break;
+            }
+            switch (command) {
+                case 1:
+                    simulationTest();
+                    break;
+                case 2:
+                    Board b = new Board(new Random());
+                    Game2048 game = new Game2048(new Random(), b, 0);
+                    AI ai = new AI(game);
+                    while(ai.oneTurn()){}
+                    break;
+                default:
+                    System.out.println("Wrong command");
+            }
+        }
+
+    }
+
+    private static void simulationTest() {
+        for (int i = 1; i <= 4; i++) {
+            simulation(i);
+        }
+    }
+
+    private static void simulation(int method) {
         Board b = new Board(new Random());
-        Game2048 game = new Game2048(new Random(), b);
+        Game2048 game = new Game2048(new Random(), b, 0);
         AI ai = new AI(game);
-        System.out.println(b);
-        for (int i = 0; i < 100; i++) {
-
-            ai.playOut();
+        for (int i = 0; i < 10001; i++) {
+            ai.playOut(method);
         }
+        System.out.println(ai.getGame().getWins()); // TODO to csv file
     }
 
-    private static void move(Board b, Directions d) {
-        if (b.move(d)) {
-            b.addBlock();
-        }
-    }
 }

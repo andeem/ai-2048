@@ -149,12 +149,38 @@ public class BoardTest {
         Board b = new Board(rand);
         assertTrue(this.board.equals(b));
     }
-    
+
     @Test
     public void testNotEquals() {
         when(rand.nextInt(anyInt())).thenReturn(0, 7, 2);
         Board b = new Board(rand);
         assertFalse(this.board.equals(b));
+    }
+
+    @Test
+    public void testPlayerCanMoveTrueDoNotChangeBoardState() {
+        Board b = new Board(rand, board.boardCopy(), board.getTurn(), false);
+        board.playerCanMove();
+        assertTrue(b.equals(board));
+    }
+    
+    @Test
+    public void testGetLegalMovesDoNotChangeState() {
+        Board b = new Board(rand, board.boardCopy(), board.getTurn(), false);
+        board.getLegalMoves();
+        assertTrue(b.equals(board));
+    }
+    
+    @Test
+    public void testPlayerCanMoveFalseDoNotChangeBoardState() {
+        int[][] b = {{2, 4, 8, 16},
+                     {16, 2, 32, 64},
+                     {2, 4, 16, 8},
+                     {4, 8, 32, 2}};
+        Board board1 = new Board(rand, b, board.getTurn(), false);
+        Board board2 = new Board(rand, board1.boardCopy(), board.getTurn(), false);
+        board.playerCanMove();
+        assertTrue(board1.equals(board2));
     }
 
 }

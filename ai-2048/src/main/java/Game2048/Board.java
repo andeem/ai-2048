@@ -20,7 +20,7 @@ public class Board {
     private boolean playerCanMove;
     private int turn;
     private int highest;
-    private Directions highestDir;
+    private String highestPos;
 
     /**
      * Class constructor
@@ -57,7 +57,7 @@ public class Board {
             }
         }
         this.turn = turn;
-        this.highestDir = Directions.LEFT;
+        highestPos = "00";
     }
 
     /**
@@ -91,6 +91,10 @@ public class Board {
 
     }
 
+    public String getHighestPos() {
+        return highestPos;
+    }
+
     /**
      * Moves blocks to selected direction
      *
@@ -107,7 +111,13 @@ public class Board {
 
         rotate(Directions.LEFT);
         updateEmptySlots();
-        this.turn = 1;
+        if (didMove) {
+            this.turn = 1;
+        }
+        
+        if (didMove && freeCoords.isEmpty()) {
+            System.out.println("Pärse");
+        }
         return didMove;
     }
 
@@ -124,11 +134,7 @@ public class Board {
                         board[i][k - 1] = board[i][k - 1] * 2;
                         if (board[i][k - 1] > highest) {
                             highest = board[i][k - 1];
-                            if (k - 1 < 2) {
-                                highestDir = this.orientation;
-                            } else {
-                                highestDir = this.orientation.next().next();
-                            }
+                            highestPos = Integer.toString(i) + Integer.toString(k - 1);
                         }
                         board[i][k] = 0;
                         k--;
@@ -148,10 +154,6 @@ public class Board {
         return moved;
     }
 
-    public Directions getHighestDir() {
-        return highestDir;
-    }
-
     /**
      * Returns true if theres legal moves
      *
@@ -159,6 +161,7 @@ public class Board {
      */
     public boolean playerCanMove() {
         if (!freeCoords.isEmpty()) {
+            playerCanMove = true;
             return true;
         }
         for (int k = 0; k < 4; k++) {
@@ -170,6 +173,8 @@ public class Board {
                         prev = board[i][j];
                         continue;
                     } else if (prev == board[i][j]) {
+                        rotate(Directions.LEFT);
+                        playerCanMove = true;
                         return true;
                     } else {
                         prev = board[i][j];
@@ -178,6 +183,7 @@ public class Board {
                 }
             }
         }
+        playerCanMove = false;
         return false;
     }
 
@@ -214,7 +220,7 @@ public class Board {
         canBeAdded = !freeCoords.isEmpty();
     }
 
-    ArrayList<Board> getLegalMoves() {
+    public ArrayList<Board> getLegalMoves() {
         ArrayList<Board> list = new ArrayList();
         if (this.turn == -1) {
             for (int i = 0; i < 4; i++) {
@@ -232,13 +238,13 @@ public class Board {
             for (String coord : freeCoords) {
                 int x = Integer.parseInt(coord.substring(0, 1));
                 int y = Integer.parseInt(coord.substring(1, 2));
-                int[][] b = this.board.clone();
+                int[][] b = boardCopy();
                 board[y][x] = 2;
-                list.add(new Board(random, board, -1, false));
+                list.add(new Board(random, boardCopy(), -1, false));
                 board = b;
-                b = this.board.clone();
+                b = boardCopy();
                 board[y][x] = 4;
-                list.add(new Board(random, board, -1, false));
+                list.add(new Board(random, boardCopy(), -1, false));
                 board = b;
             }
         }
@@ -310,7 +316,7 @@ public class Board {
         return ts;
     }
 
-    private int[][] boardCopy() {
+    public int[][] boardCopy() {
         int[][] copy = new int[this.board.length][this.board[0].length];
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
