@@ -28,13 +28,16 @@ public class ConsoleUI {
             }
             switch (command) {
                 case 1:
-                    simulationTest();
+                    System.out.println("How many runs?");
+                    int cnt = Integer.parseInt(scanner.nextLine());
+                    simulationTest(cnt);
                     break;
                 case 2:
                     Board b = new Board(new Random());
                     Game2048 game = new Game2048(new Random(), b, 0);
                     AI ai = new AI(game);
                     while(ai.oneTurn()){}
+                    System.out.println(ai.getGame().getBoard());
                     break;
                 default:
                     System.out.println("Wrong command");
@@ -43,19 +46,22 @@ public class ConsoleUI {
 
     }
 
-    private static void simulationTest() {
+    private static void simulationTest(int cnt) {
         for (int i = 1; i <= 4; i++) {
-            simulation(i);
+            simulation(i, cnt);
         }
     }
 
-    private static void simulation(int method) {
+    private static void simulation(int method, int cnt) {
         Board b = new Board(new Random());
         Game2048 game = new Game2048(new Random(), b, 0);
         AI ai = new AI(game);
-        for (int i = 0; i < 10001; i++) {
+        for (int i = 0; i < cnt; i++) {
             ai.playOut(method);
         }
+        System.out.println("2048: " + ai.c2048);
+        System.out.println("1024: " + ai.c1024);
+        System.out.println("512: " + ai.c512);
         System.out.println(ai.getGame().getWins()); // TODO to csv file
     }
 

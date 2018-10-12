@@ -7,7 +7,6 @@ package Game2048;
 public interface Game<T> {
  
     void playRandom();
-    boolean ownTurn();
     boolean isRunning();
     int getWins();
     int getTotalGames();

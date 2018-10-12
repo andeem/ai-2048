@@ -1,5 +1,6 @@
 package Game2048;
 
+import java.util.ArrayList;
 import static org.mockito.Mockito.*;
 import java.util.Random;
 import org.junit.After;
@@ -85,13 +86,24 @@ public class BoardTest {
     }
 
     @Test
-    public void testMoveRotatesTheBoard() {
+    public void testMoveMovesNumbersOverEmptySpaceAndAddsThemOtherDirection() {
         reset(rand);
-        when(rand.nextInt(anyInt())).thenReturn(3, 7, 11);
+        when(rand.nextInt(anyInt())).thenReturn(0, 7, 10);
         board = new Board(rand);
-        assertTrue("Index[3,0] not empty", board.getBoard()[0][3] == 2);
+        assertTrue("First index has value 2", board.getBoard()[0][0] == 2);
         board.move(Directions.UP);
-        assertTrue("Index[0,0] not empty", board.getBoard()[0][0] == 2);
+        assertTrue("First index has value 4", board.getBoard()[0][0] == 4);
+    }
+
+    @Test
+    public void testMoveReturnFalseWhenNoMoveIsPossible() {
+        int[][] b = {
+            {2, 4, 2, 4},
+            {4, 2, 4, 2},
+            {2, 4, 2, 4},
+            {4, 2, 4, 2}};
+        board = new Board(rand, b);
+        assertFalse(board.move(Directions.DOWN));
     }
 
     @Test
@@ -163,24 +175,53 @@ public class BoardTest {
         board.playerCanMove();
         assertTrue(b.equals(board));
     }
-    
+
     @Test
     public void testGetLegalMovesDoNotChangeState() {
         Board b = new Board(rand, board.boardCopy(), board.getTurn(), false);
         board.getLegalMoves();
         assertTrue(b.equals(board));
     }
-    
+
     @Test
     public void testPlayerCanMoveFalseDoNotChangeBoardState() {
         int[][] b = {{2, 4, 8, 16},
-                     {16, 2, 32, 64},
-                     {2, 4, 16, 8},
-                     {4, 8, 32, 2}};
+        {16, 2, 32, 64},
+        {2, 4, 16, 8},
+        {4, 8, 32, 2}};
         Board board1 = new Board(rand, b, board.getTurn(), false);
         Board board2 = new Board(rand, board1.boardCopy(), board.getTurn(), false);
         board.playerCanMove();
         assertTrue(board1.equals(board2));
+    }
+
+    @Test
+    public void testGetLegalMovesForAddingBlockReturnAllPossibleWaysToAddBlock() {
+        int[][] b = {{0, 4, 8, 16},
+        {16, 2, 32, 64},
+        {2, 4, 2, 8},
+        {2, 8, 32, 2}};
+        Board board1 = new Board(rand, b, 1, false);
+        
+        int[][] b2 = {{2, 4, 8, 16},
+        {16, 2, 32, 64},
+        {2, 4, 2, 8},
+        {2, 8, 32, 2}};
+        Board board2 = new Board(rand, b2, -1, false);
+        
+        int[][] b3 = {{4, 4, 8, 16},
+        {16, 2, 32, 64},
+        {2, 4, 2, 8},
+        {2, 8, 32, 2}};
+        Board board3 = new Board(rand, b3, -1, false);
+        
+        ArrayList<Board> moves = board1.getLegalMoves();
+        ArrayList<Board> moves2 = new ArrayList();
+        moves2.add(board2);
+        moves2.add(board3);
+        
+
+        assertTrue(moves.equals(moves2));
     }
 
 }

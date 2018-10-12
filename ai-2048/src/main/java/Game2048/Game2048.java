@@ -28,84 +28,76 @@ public class Game2048 implements Game {
         this.highest = highest;
     }
 
-    
-    
     @Override
     public void playRandom() {
         playRandom(1);
     }
-    
-    
+
     public void playRandom(int selection) {
         //Board simulation = new Board(random, board.getBoard(), board.getTurn());
         if (board.getTurn() == 1) {
             board.addBlock();
         } else {
-            switch(selection){
-                case 1:
-                    randomPlay1();
-                    break;
-                case 2:
-                    randomPlay2();
-                    break;
-                case 3:
-                    randomPlay3();
-                    break;
-                case 4:
-                    randomPlay4();
-                    break;
+            if (board.playerCanMove()) {
+                switch (selection) {
+                    case 1:
+                        randomPlay1();
+                        break;
+                    case 2:
+                        randomPlay2();
+                        break;
+                    case 3:
+                        randomPlay3();
+                        break;
+                    case 4:
+                        randomPlay4();
+                        break;
+                }
             }
         }
 
     }
 
     private void randomPlay4() {
-        if (board.playerCanMove()) {
-            
-            if (board.move(Directions.LEFT)) {
-                return;
-            }
-            if (board.move(Directions.DOWN)) {
-                return;
-            }
-            if (board.move(Directions.RIGHT)) {
-                return;
-            }
-            if (board.move(Directions.UP)) {
-                return;
-            }
+
+        if (board.move(Directions.LEFT)) {
+            return;
         }
+        if (board.move(Directions.DOWN)) {
+            return;
+        }
+        if (board.move(Directions.RIGHT)) {
+            return;
+        }
+        if (board.move(Directions.UP)) {
+            return;
+        }
+
     }
-    
+
     private void randomPlay3() {
-        if (board.playerCanMove()) {                        
             Directions dir = getDirection(random.nextInt(4));
             while (!board.move(dir)) {
                 dir = getDirection(random.nextInt(4));
             }
-        }
     }
-    
+
     private void randomPlay2() {
-        if (board.playerCanMove()) {
-            
+
             if (board.move(Directions.LEFT)) {
                 return;
             }
             if (board.move(Directions.DOWN)) {
                 return;
             }
-                        
+
             Directions dir = getDirection(random.nextInt(4));
             while (!board.move(dir)) {
                 dir = getDirection(random.nextInt(4));
             }
-        }
     }
-    
-    
+
     private void randomPlay1() {
-        if (board.playerCanMove()) {
             if (directionToCounter != null && !prevHighestPos.equals(board.getHighestPos())) {
                 if (board.move(directionToCounter)) {
                     return;
@@ -124,15 +116,15 @@ public class Game2048 implements Game {
                 return;
             }
             if (board.move(Directions.RIGHT)) {
+                directionToCounter = Directions.LEFT;
                 return;
             }
-            
+
             Directions dir = getDirection(random.nextInt(4));
             directionToCounter = dir.next().next();
             while (!board.move(dir)) {
                 dir = getDirection(random.nextInt(4));
             }
-        }
     }
 
     private Directions getDirection(int i) {
@@ -150,13 +142,9 @@ public class Game2048 implements Game {
     }
 
     @Override
-    public boolean ownTurn() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean isRunning() {
-        return board.playerCanMove();
+        
+        return board.playerCanMove() ;//&& board.getHighest() <= highest;
     }
 
     @Override
@@ -204,12 +192,9 @@ public class Game2048 implements Game {
 
     @Override
     public boolean hasWon() {
-//        if (highest < 512) {
-//            return board.getHighest() >= 512;
-//        } else {
-            return board.getHighest() > highest;
-//        }
+        return board.getHighest() > highest;
         
+
     }
 
     @Override

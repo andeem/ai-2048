@@ -115,9 +115,6 @@ public class Board {
             this.turn = 1;
         }
         
-        if (didMove && freeCoords.isEmpty()) {
-            System.out.println("Pärse");
-        }
         return didMove;
     }
 
