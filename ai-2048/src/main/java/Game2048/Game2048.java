@@ -1,7 +1,6 @@
 package Game2048;
 
-import java.util.ArrayList;
-import java.util.List;
+import Utils.ArrayList;
 import java.util.Random;
 
 public class Game2048 implements Game {
@@ -168,7 +167,7 @@ public class Game2048 implements Game {
 
     @Override
     public Game[] getMoves() {
-        return this.moves.toArray(new Game[moves.size()]);
+        return arrayFromList(this.moves);
     }
 
     @Override
@@ -176,7 +175,7 @@ public class Game2048 implements Game {
         if (this.legalMoves == null) {
             this.legalMoves = legalMovesFromBoard();
         }
-        return this.legalMoves.toArray(new Game[legalMoves.size()]);
+        return arrayFromList(this.legalMoves);
     }
 
     @Override
@@ -209,13 +208,22 @@ public class Game2048 implements Game {
 
     private ArrayList<Game> legalMovesFromBoard() {
         ArrayList<Game> moves = new ArrayList();
-        List<Board> boards = board.getLegalMoves();
+        ArrayList<Board> boards = board.getLegalMoves();
         for (Board b : boards) {
             moves.add(new Game2048(random, b, this.highest));
         }
         return moves;
     }
 
+    private Game[] arrayFromList(ArrayList<Game> list) {
+        Game[] arr = new Game[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            arr[i] = list.get(i);
+        }
+        
+        return arr;
+    }
+    
     @Override
     public Board getBoard() {
         return board;

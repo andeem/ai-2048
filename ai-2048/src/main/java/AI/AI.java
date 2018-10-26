@@ -35,7 +35,6 @@ public class AI {
             playOut();
         }
         boolean result = doMove();
-        System.out.println(game.getBoard());
         return result;
     }
 

@@ -1,10 +1,7 @@
 package Game2048;
 
-import java.util.ArrayList;
+import Utils.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Random;
 
 /**

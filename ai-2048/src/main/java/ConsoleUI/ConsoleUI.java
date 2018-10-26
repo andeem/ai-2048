@@ -7,7 +7,6 @@ package ConsoleUI;
 
 import AI.AI;
 import Game2048.Board;
-import Game2048.Directions;
 import Game2048.Game2048;
 import java.util.Random;
 import java.util.Scanner;
@@ -20,7 +19,7 @@ public class ConsoleUI {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter command: 1) Run MCTS simulation tests with different simulations, 9) Quit");
+        printMenu();
         while (true) {
             int command = Integer.parseInt(scanner.nextLine());
             if (command == 9) {
@@ -36,14 +35,30 @@ public class ConsoleUI {
                     Board b = new Board(new Random());
                     Game2048 game = new Game2048(new Random(), b, 0);
                     AI ai = new AI(game);
-                    while(ai.oneTurn()){}
-                    System.out.println(ai.getGame().getBoard());
+                    while (ai.oneTurn()) {
+                        final String ANSI_CLS = "\u001b[2J";
+                        final String ANSI_HOME = "\u001b[H";
+                        System.out.print(ANSI_CLS + ANSI_HOME);
+                        System.out.flush();
+                        for (int i = 0; i < 10; i++) {
+                            System.out.println("");
+                        }
+                        System.out.print(ai.getGame().getBoard());
+                    }
+                    System.out.println("Game ended!");
+                    System.out.println("Press enter...");
+                    scanner.nextLine();
+                    printMenu();
                     break;
                 default:
                     System.out.println("Wrong command");
             }
         }
 
+    }
+
+    private static void printMenu() {
+        System.out.println("Enter command: 1) Run MCTS simulation tests with different simulations, 2) Let the AI play! 9) Quit");
     }
 
     private static void simulationTest(int cnt) {

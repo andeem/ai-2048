@@ -1,6 +1,6 @@
 package Game2048;
 
-import java.util.ArrayList;
+import Utils.ArrayList;
 import static org.mockito.Mockito.*;
 import java.util.Random;
 import org.junit.After;
